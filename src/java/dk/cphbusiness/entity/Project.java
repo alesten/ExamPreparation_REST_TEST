@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -35,7 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Project.findByName", query = "SELECT p FROM Project p WHERE p.name = :name")})
 @XmlRootElement
 public class Project implements Serializable {
-    @ManyToMany
+    @ManyToMany 
     private List<ProjectUser> projectUsers = new ArrayList<ProjectUser>();
     private static final long serialVersionUID = 1L;
     @Id
@@ -117,13 +118,16 @@ public class Project implements Serializable {
         this.lastModified = lastModified;
     }
 
-    @XmlTransient
-    public List<ProjectUser> getProjectUsers() {
+     public List<ProjectUser> getProjectUsers() {
         return projectUsers;
     }
 
     public void setProjectUsers(List<ProjectUser> projectUsers) {
         this.projectUsers = projectUsers;
+    }
+
+    public void setProjectUser(ProjectUser pu) {
+projectUsers.add(pu);
     }
     
 }

@@ -34,7 +34,7 @@ public class Facade {
          EntityManager em =getEM();
     return em.find(ProjectUser.class, id);
     }
-    public  static List<ProjectUser>getUsers(){
+    public static List<ProjectUser>getUsers(){
          EntityManager em =getEM();
     return em.createNamedQuery("ProjectUser.findAll", ProjectUser.class).getResultList();
     }

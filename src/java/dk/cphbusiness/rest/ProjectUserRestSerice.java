@@ -8,8 +8,13 @@ package dk.cphbusiness.rest;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.cphbusiness.entity.Facade;
+import dk.cphbusiness.entity.Project;
 import dk.cphbusiness.entity.ProjectUser;
+import java.util.List;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -56,7 +61,16 @@ public class ProjectUserRestSerice {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers() {
-        return Response.status(Response.Status.OK).entity(gson.toJson(Facade.getUsers())).build();
+        JsonArray out= new JsonArray();
+        JsonObject juser = new JsonObject();
+        List<ProjectUser>users= Facade.getUsers();
+        System.out.println(users.size());
+        for (ProjectUser user : users) {
+            juser=makeUser(user);
+           
+            out.add(juser);
+        }
+        return Response.status(Response.Status.OK).entity(out.toString()).build();
     }
     @DELETE
     @Path("{id}")
@@ -69,9 +83,26 @@ public class ProjectUserRestSerice {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}")
     public Response getUser(@PathParam("id") String id){
-        return Response.status(Response.Status.OK).entity(gson.toJson(Facade.findUser(new Long(id)))).build(); 
+        return Response.status(Response.Status.OK).entity(makeUser(Facade.findUser(new Long(id))).toString()).build(); 
     }
     
+    private JsonObject makeUser(ProjectUser user){
+          JsonObject juser=new JsonObject();
+            juser.addProperty("id", user.getId());
+            juser.addProperty("userName", user.getUserName());
+            juser.addProperty("email", user.getEmail());
+            juser.addProperty("created",user.getCreated().toString());
+            JsonArray jprojects = new JsonArray();
+            JsonObject project;
+            for (Project projects : user.getContributors()) {
+            project=new JsonObject();
+            project.addProperty("name", projects.getName());
+            project.addProperty("id", projects.getId());
+                jprojects.add(project);
+            }
+             juser.add("projects", jprojects);
+            return juser;
+    }
     
 
 }
