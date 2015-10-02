@@ -31,6 +31,8 @@ public class ApplicationConfig extends Application {
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(dk.cphbusiness.rest.ProjectRestService.class);
         resources.add(dk.cphbusiness.rest.ProjectUserRestSerice.class);
+        resources.add(exception.AllExceptionMapper.class);
+        resources.add(exception.NotFoundExceptionMapper.class);
     }
     
 }

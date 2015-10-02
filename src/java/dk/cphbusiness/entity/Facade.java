@@ -15,51 +15,70 @@ import javax.persistence.Persistence;
  * @author sofus
  */
 public class Facade {
+
     static EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU");
-        private static EntityManager getEM(){
+
+    private static EntityManager getEM() {
         return emf.createEntityManager();
+    }
+
+    public static ProjectUser createUser(ProjectUser user) {
+        EntityManager em = getEM();
+        em.getTransaction().begin();
+        em.persist(user);
+        em.getTransaction().commit();
+        return user;
+    }
+
+    public static ProjectUser findUser(String userName) {
+        EntityManager em = getEM();
+        return em.createNamedQuery("ProjectUser.findByUsername", ProjectUser.class).getSingleResult();
+    }
+
+    public static ProjectUser findUser(Long id) {
+        EntityManager em = getEM();
+        try {
+            return em.find(ProjectUser.class, id);
+        } catch (Exception e) {
+            return null;
         }
-    public static ProjectUser createUser(ProjectUser user){
-        EntityManager em =getEM();
-    em.getTransaction().begin();
-    em.persist(user);
-    em.getTransaction().commit();
-    return user;
-    }
-    public  static ProjectUser findUser(String userName){
-         EntityManager em =getEM();
-    return em.createNamedQuery("ProjectUser.findByUsername", ProjectUser.class).getSingleResult();
-    }
-    public  static ProjectUser findUser(Long id){
-         EntityManager em =getEM();
-    return em.find(ProjectUser.class, id);
-    }
-    public static List<ProjectUser>getUsers(){
-         EntityManager em =getEM();
-    return em.createNamedQuery("ProjectUser.findAll", ProjectUser.class).getResultList();
-    }
-    
-    public static void deleteUser(Long id){
-    EntityManager em = getEM();
-    em.getTransaction().begin();
-    em.remove(em.find(ProjectUser.class, id));
-    em.getTransaction().commit();
-    }
-    
-    public  static Project createProject(Project p){
-         EntityManager em =getEM();
-    em.getTransaction().begin();
-    em.persist(p);
-    em.getTransaction().commit();
-    return p;
     }
 
-   public void assignUserToProject(Long projectID, Long userID){
-    EntityManager em =getEM();
-    ProjectUser pu = em.find(ProjectUser.class, userID);
-    em.getTransaction().begin();
-    pu.setContributor(em.find(Project.class, projectID));
-    em.getTransaction().commit();
-   }
+    public static List<ProjectUser> getUsers() {
+        EntityManager em = getEM();
+        return em.createNamedQuery("ProjectUser.findAll", ProjectUser.class).getResultList();
+    }
 
+    public static void deleteUser(Long id) {
+        EntityManager em = getEM();
+        em.getTransaction().begin();
+        em.remove(em.find(ProjectUser.class, id));
+        em.getTransaction().commit();
+    }
+
+    public static List<Project> getProjects() {
+        EntityManager em = getEM();
+        return em.createNamedQuery("Project.findAll", Project.class).getResultList();
+    }
+
+    public static Project findProject(Long id) {
+        EntityManager em = getEM();
+        return em.find(Project.class, id);
+    }
+
+    public static Project createProject(Project p) {
+        EntityManager em = getEM();
+        em.getTransaction().begin();
+        em.persist(p);
+        em.getTransaction().commit();
+        return p;
+    }
+
+    public void assignUserToProject(Long projectID, Long userID) {
+        EntityManager em = getEM();
+        Project p = em.find(Project.class, projectID);
+        em.getTransaction().begin();
+        p.setProjectUser(em.find(ProjectUser.class, userID));
+        em.getTransaction().commit();
+    }
 }
